@@ -28,3 +28,9 @@ def user_login(request):
                 messages.success(request, 'Logged in successfully.')
                 return redirect('profile')
     return render(request, 'user_app/login.html', {'form' : form})
+
+@login_required
+def user_logout(request):
+    logout(request)
+    messages.success(request, 'Logged out successfully')
+    return redirect('homePage')
