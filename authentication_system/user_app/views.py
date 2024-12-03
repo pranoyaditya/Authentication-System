@@ -14,3 +14,17 @@ def signUp(request):
             messages.success(request, 'Account created successfully.')
             return redirect('user_login')
     return render(request, 'user_app/signup.html', {'form':form})
+
+def user_login(request):
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            userName = form.cleaned_data['username']
+            userPass = form.cleaned_data['password']
+            user = authenticate(username = userName, password = userPass)
+            if user:
+                login(request, user)
+                messages.success(request, 'Logged in successfully.')
+                return redirect('profile')
+    return render(request, 'user_app/login.html', {'form' : form})
