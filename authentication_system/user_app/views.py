@@ -61,7 +61,7 @@ def profile(request):
             storage = messages.get_messages(request)
             storage.used = True  # Marks all messages as used
 
-            messages.success('Updated information successfully.')
+            messages.success(request, 'Updated information successfully.')
     return render(request, 'user_app/profile.html', {'form' : form})
 
 @login_required
