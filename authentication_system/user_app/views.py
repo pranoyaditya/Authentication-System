@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import RegisterForm,LoginForm, UpdateUserForm
-from django.contrib.auth.forms import PasswordResetForm, PasswordChangeForm
+from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,logout,authenticate,update_session_auth_hash
 from django.contrib import messages
@@ -45,3 +45,29 @@ def profile(request):
             form.save()
             messages.success('Updated information successfully.')
     return render(request, 'user_app/profile.html', {'form' : form})
+
+@login_required
+def changePassword(request):
+    form = PasswordChangeForm(request.user)
+    if request.method == 'POST':
+        form = PasswordChangeForm(user = request.user ,data = request.POST)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            messages.success(request, 'Password updated successfully')
+            return redirect('profile')
+    return render(request, 'user_app/password_change.html', {'form' : form, 'type': 'Update'})
+
+@login_required
+def resetPassword(request):
+    form = SetPasswordForm(request.user)
+    if request.method == 'POST':
+        form = SetPasswordForm(user = request.user ,data = request.POST)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            messages.success(request, 'Password updated successfully')
+            return redirect('profile')
+    return render(request, 'user_app/password_change.html', {'form' : form, 'type': 'Reset'})
