@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
-from .forms import RegisterForm,LoginForm
+from .forms import RegisterForm,LoginForm, UpdateUserForm
+from django.contrib.auth.forms import PasswordResetForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,logout,authenticate,update_session_auth_hash
 from django.contrib import messages
@@ -18,7 +19,7 @@ def signUp(request):
 def user_login(request):
     form = LoginForm()
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = LoginForm(request=request, data = request.POST)
         if form.is_valid():
             userName = form.cleaned_data['username']
             userPass = form.cleaned_data['password']
@@ -34,3 +35,13 @@ def user_logout(request):
     logout(request)
     messages.success(request, 'Logged out successfully')
     return redirect('homePage')
+
+@login_required
+def profile(request):
+    form = UpdateUserForm(instance = request.user)
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success('Updated information successfully.')
+    return render(request, 'user_app/profile.html', {'form' : form})
