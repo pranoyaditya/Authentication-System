@@ -44,6 +44,12 @@
         </div>
     </nav>
 
+    {% for m in messages %}
+      <div class="">
+        <h3 class="text-{{m.tags}}">{{m}}</h3>
+      </div>
+    {% endfor %}
+
     {% block content %}
     
     {% endblock content %}

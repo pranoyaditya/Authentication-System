@@ -7,11 +7,17 @@ from django.contrib import messages
 
 # Create your views here.
 def signUp(request):
+    if request.user.is_authenticated:
+        return redirect('profile')
     form = RegisterForm()
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
+
+            storage = messages.get_messages(request)
+            storage.used = True  # Marks all messages as used
+
             messages.success(request, 'Account created successfully.')
             return redirect('user_login')
     return render(request, 'user_app/signup.html', {'form':form})
@@ -26,6 +32,10 @@ def user_login(request):
             user = authenticate(username = userName, password = userPass)
             if user:
                 login(request, user)
+
+                storage = messages.get_messages(request)
+                storage.used = True  # Marks all messages as used
+
                 messages.success(request, 'Logged in successfully.')
                 return redirect('profile')
     return render(request, 'user_app/login.html', {'form' : form})
@@ -33,6 +43,10 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
+
+    storage = messages.get_messages(request)
+    storage.used = True  # Marks all messages as used
+
     messages.success(request, 'Logged out successfully')
     return redirect('homePage')
 
@@ -43,6 +57,10 @@ def profile(request):
         form = UpdateUserForm(request.POST)
         if form.is_valid():
             form.save()
+
+            storage = messages.get_messages(request)
+            storage.used = True  # Marks all messages as used
+
             messages.success('Updated information successfully.')
     return render(request, 'user_app/profile.html', {'form' : form})
 
@@ -55,6 +73,10 @@ def changePassword(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, request.user)
+
+            storage = messages.get_messages(request)
+            storage.used = True  # Marks all messages as used
+
             messages.success(request, 'Password updated successfully')
             return redirect('profile')
     return render(request, 'user_app/password_change.html', {'form' : form, 'type': 'Update'})
@@ -68,6 +90,10 @@ def resetPassword(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, request.user)
+
+            storage = messages.get_messages(request)
+            storage.used = True  # Marks all messages as used
+
             messages.success(request, 'Password updated successfully')
             return redirect('profile')
     return render(request, 'user_app/password_change.html', {'form' : form, 'type': 'Reset'})
